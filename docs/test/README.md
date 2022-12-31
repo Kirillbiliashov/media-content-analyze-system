@@ -4,7 +4,7 @@
 
 GET запит на отримання всіх повідомлень
 
-![Screenshot](/Users/admin/Desktop/GET_MESSAGES.png)
+![](images/GET_MESSAGES.png)
 
 GET запит на отримання конкретного повідомлення
 
