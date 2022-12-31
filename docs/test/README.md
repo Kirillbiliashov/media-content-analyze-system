@@ -4,41 +4,41 @@
 
 GET запит на отримання всіх повідомлень
 
-![](images/GET_MESSAGES.png)
+  <img src="./screenshots/GET_MESSAGES.png" >
 
 GET запит на отримання конкретного повідомлення
 
-![](/Users/admin/Desktop/GET_MESSAGE.png)
+  <img src="./screenshots/GET_MESSAGE.png" >
 
 POST запит на збереження нового повідомлення
 
-![](/Users/admin/Desktop/MESSAGE_POST.png)
+  <img src="./screenshots/MESSAGE_POST.png" >
 
 PUT запит на оновлення інформації про повідомлення
 
-![](/Users/admin/Desktop/MESSAGE_PUT.png)
+  <img src="./screenshots/MESSAGE_PUT.png" >
 
 DELETE запит на видалення повідомлення
 
-![](/Users/admin/Desktop/DELETE_MESSAGE.png)
+  <img src="./screenshots/DELETE_MESSAGE.png" >
 
 GET запит на отримання всіх метаданих
 
-![](/Users/admin/Desktop/METADATA_GET_ALL.png)
+  <img src="./screenshots/METADATA_GET_ALL.png" >
 
 GET запит на отримання конкретних метаданих
 
-![](/Users/admin/Desktop/METADATA_GET.png)
+  <img src="./screenshots/METADATA_GET.png" >
 
 POST запит на збереження нових метаданих
 
-![](/Users/admin/Desktop/METADATA_POST.png)
+  <img src="./screenshots/METADATA_POST.png" >
 
 PUT запит на оновлення існуючих метаданих
 
-![](/Users/admin/Desktop/METADATA_PUT.png)
+  <img src="./screenshots/METADATA_PUT.png" >
 
 DELETE запит на видалення метаданих
 
-![](/Users/admin/Desktop/METADATA_DELETE.png)
+  <img src="./screenshots/METADATA_DELETE.png" >
 
