@@ -272,3 +272,137 @@ COMMIT;
 ```
 
 - RESTfull сервіс для управління даними
+
+## Головний файл, що відповідає за запуск серверу
+```js
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const PORT = process.env.PORT || 8080;
+
+const app = express();
+app.use(bodyParser.text());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/messages', require('./message_routes'));
+app.use('/metadata', require('./metadata_routes'));
+
+app.listen(PORT, () => console.log(`server started running at port ${PORT}`));
+```
+
+## Файл, що створює та експортує connection pool
+```js
+const mysql = require('mysql2');
+
+const USER = 'root';
+const PASSWORD = 'root';
+const DB = 'mcas';
+
+module.exports = mysql.createPool({
+user: USER,
+password: PASSWORD,
+database: DB,
+namedPlaceholders: true
+});
+```
+
+## Файл-контролер для CRUD операцій з повідомленнями
+```js
+const express = require('express');
+const router = new express.Router();
+
+const pool = require('./connection_pool');
+const createResponse = require('./create_response');
+
+const MESSAGE_SQL = {
+    GET_ALL: 'SELECT * FROM message',
+    GET: 'SELECT * FROM message WHERE id = :id',
+    INSERT: 'INSERT INTO message(text, result_id) VALUES(:text, :resultId)',
+    DELETE: 'DELETE FROM message WHERE id = :id',
+    UPDATE: 'UPDATE message SET text = :text, result_id = :resultId WHERE id = :id'
+};
+
+router.get('/', (req, resp) => {
+    pool.execute(MESSAGE_SQL.GET_ALL,
+        createResponse('unable to retrieve messages', resp));
+}).post('/', (req, resp) => {
+    const {text} = req.body;
+    const {resultId} = req.body;
+    pool.execute(MESSAGE_SQL.INSERT, {text, resultId},
+        createResponse('unable to save message', resp));
+}).get('/:id', (req, resp) => {
+    const {id} = req.params;
+    pool.execute(MESSAGE_SQL.GET, {id},
+        createResponse(`unable to retrieve message by id ${id}`, resp));
+}).delete('/:id', (req, resp) => {
+    const {id} = req.params;
+    pool.execute(MESSAGE_SQL.DELETE, {id},
+        createResponse(`unable to delete message by id ${id}`, resp));
+}).put('/:id', (req, resp) => {
+    const {id} = req.params;
+    const {text} = req.body;
+    const {resultId} = req.body;
+    pool.execute(MESSAGE_SQL.UPDATE, {id, text, resultId},
+        createResponse(`unable to update message by id ${id}`, resp));
+});
+
+module.exports = router;
+```
+## Файл-контроллер для CRUD операцій з метаданими
+```js
+const express = require('express');
+const router = new express.Router();
+
+const pool = require('./connection_pool');
+
+const createResponse = require('./create_response');
+
+const METADATA_SQL = {
+GET_ALL: 'SELECT * FROM metadata',
+GET: 'SELECT * FROM metadata WHERE id = :id',
+INSERT: 'INSERT INTO metadata(`key`, value, message_id) VALUES(:key, :value, :messageId)',
+DELETE: 'DELETE FROM metadata WHERE id = :id',
+UPDATE: 'UPDATE metadata SET `key` = :key, value = :value, message_id = :messageId WHERE id = :id'
+};
+
+router.get('/', (req, resp) => {
+pool.execute(METADATA_SQL.GET_ALL,
+createResponse('unable to save metadata', resp));
+}).post('/', (req, resp) => {
+const {key} = req.body;
+const {value} = req.body;
+const {messageId} = req.body;
+pool.execute(METADATA_SQL.INSERT, {key, value, messageId},
+createResponse('unable to save metadata', resp));
+}).get('/:id', (req, resp) => {
+const {id} = req.params;
+pool.execute(METADATA_SQL.GET, {id},
+createResponse(`unable to retrieve metadata by id ${id}`, resp));
+}).delete('/:id', (req, resp) => {
+const {id} = req.params;
+pool.execute(METADATA_SQL.DELETE, {id},
+createResponse(`unable to delete metadata by id ${id}`, resp));
+}).put('/:id', (req, resp) => {
+const {id} = req.params;
+const {key} = req.body;
+const {value} = req.body;
+const {messageId} = req.body;
+pool.execute(METADATA_SQL.UPDATE, {id, key, value, messageId},
+createResponse(`unable to update metadata by id ${id}`, resp));
+});
+
+module.exports = router;
+```
+
+## Файл, що експортує utility метод createResponse
+```js
+const RESP = {
+    SERVER_ERROR: 500,
+    SUCCESS: 200
+};
+
+module.exports = (errorMsg, resp) => (err, res) => {
+    if (err) resp.status(RESP.SERVER_ERROR).send(errorMsg);
+    resp.status(RESP.SUCCESS).send(res);
+};
+```
